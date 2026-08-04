@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление заказа - Food Construct</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Food Construct</h1>
+        <nav>
+            <a href="index.html">О нас</a>
+            <a href="menu.html">Собрать ланч</a>
+            <a href="#">Заказы</a>
+            <a href="order.html" class="active">Оформить заказ</a>
+            <a href="#contacts">Контакты</a>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>Состав заказа</h2>
+            <div id="order-contents">
+                <!-- Сюда JS подгрузит выбранные блюда -->
+                <p>Загрузка данных...</p>
+            </div>
+        </section>
+
+        <section class="order-section">
+            <h2>Оформление заказа</h2>
+            <form class="order-form" id="submitOrderForm">
+                <div class="order-column">
+                    <h3>Ваш заказ</h3>
+                    <div class="order-summary">
+                        <div class="selected-section" id="selected-soup"><h4>Суп</h4><div class="selected-content"></div></div>
+                        <div class="selected-section" id="selected-main"><h4>Главное блюдо</h4><div class="selected-content"></div></div>
+                        <div class="selected-section" id="selected-starter"><h4>Салат/Стартер</h4><div class="selected-content"></div></div>
+                        <div class="selected-section" id="selected-drink"><h4>Напиток</h4><div class="selected-content"></div></div>
+                        <div class="selected-section" id="selected-dessert"><h4>Десерт</h4><div class="selected-content"></div></div>
+                        <div id="order-total">Стоимость заказа: <span id="total-price">0</span> руб.</div>
+                    </div>
+                </div>
+
+                <div class="order-column">
+                    <h3>Ваши данные</h3>
+                    <div class="form-group"><label for="name">Имя *</label><input type="text" id="name" name="full_name" placeholder="Иван Иванов" required></div>
+                    <div class="form-group"><label for="email">Email *</label><input type="email" id="email" name="email" placeholder="example@mail.ru" required></div>
+                    <div class="form-group checkbox-group"><input type="checkbox" id="subscribe" name="subscribe" value="1" checked><label for="subscribe">Подписаться на новости и акции</label></div>
+                    <div class="form-group"><label for="phone">Телефон *</label><input type="tel" id="phone" name="phone" placeholder="+7 (999) 123-45-67" required></div>
+                    <div class="form-group"><label for="address">Адрес доставки *</label><input type="text" id="address" name="delivery_address" placeholder="Москва, ул. Пушкина, д. 1" required></div>
+                    <fieldset>
+                        <legend>Время доставки</legend>
+                        <div class="radio-group">
+                            <label><input type="radio" name="delivery_type" value="now" required checked> Как можно скорее</label>
+                            <label><input type="radio" name="delivery_type" value="by_time"> Указать время</label>
+                        </div>
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label for="delivery_time">Укажите время</label>
+                            <input type="time" id="delivery_time" name="delivery_time" min="07:00" max="23:00" step="300">
+                        </div>
+                    </fieldset>
+                    <div class="form-group">
+                        <label for="comment">Комментарий</label>
+                        <textarea id="comment" name="comment" placeholder="Например, без соли"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-reset" onclick="window.location.href='menu.html'">Вернуться к меню</button>
+                    <button type="submit" class="btn-submit" id="submitBtn">Отправить заказ</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer id="contacts">
+        <div><p><a href="tel:+74951234567">+7 (495) 123-45-67</a></p><p><a href="mailto:order@foodconstruct.ru">order@foodconstruct.ru</a></p></div>
+        <div><p>Москва, ул. Тверская, д. 12, оф. 305</p><p>&copy; 2026 Food Construct</p></div>
+    </footer>
+
+    <!-- Подключаем ВСЕ скрипты. data.js как резерв, order.js для логики страницы -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <script src="order.js"></script>
+</body>
+</html>
