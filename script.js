@@ -1,4 +1,4 @@
-﻿/* script.js - ЛР 8 (Работа с localStorage и панелью оформления) */
+/* script.js - ЛР 8 (Работа с localStorage и панелью оформления) */
 
 let dishes = [];
 
@@ -245,7 +245,7 @@ function updateOrderUI() {
         }
     });
 
-    // ===== ОБНОВЛЕНИЕ ПАНЕЛИ ОФОРМЛЕНИЯ =====
+    // ===== ОБНОВЛЕНИЕ ПАНЕЛИ ОФОРМЛЕНИЯ (КНОПКА ПЕРЕЙТИ) =====
     const checkoutPanel = document.getElementById('checkout-panel');
     const totalSpan = document.getElementById('panel-total-price');
     const checkoutLink = document.getElementById('checkout-link');
