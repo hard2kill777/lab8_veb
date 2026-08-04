@@ -1,4 +1,4 @@
-/* script.js - Финальная версия с динамической кнопкой оформления */
+/* script.js - Финальная версия с умной кнопкой оформления */
 
 let dishes = [];
 
@@ -182,7 +182,7 @@ function renderDishesInContainer(container, dishesArray) {
     updateOrderUI();
 }
 
-// ========== 5. ДОБАВЛЕНИЕ В КОРЗИНУ И ОБНОВЛЕНИЕ UI ==========
+// ========== 5. ДОБАВЛЕНИЕ В КОРЗИНУ ==========
 
 function handleAddClick(event) {
     var card = event.target.closest('.menu-card');
@@ -200,7 +200,7 @@ function handleAddClick(event) {
     updateOrderUI();
 }
 
-// ========== 6. ОБНОВЛЕНИЕ UI И СОЗДАНИЕ КНОПКИ ==========
+// ========== 6. ОБНОВЛЕНИЕ UI (С УМНОЙ КНОПКОЙ) ==========
 
 function updateOrderUI() {
     var categories = ['soup', 'main', 'starter', 'drink', 'dessert'];
@@ -241,11 +241,15 @@ function updateOrderUI() {
     });
 
     // ===== ДИНАМИЧЕСКОЕ СОЗДАНИЕ КНОПКИ ОФОРМЛЕНИЯ =====
-    const panel = document.getElementById('dynamic-checkout-panel');
-    
-    if (hasSelection) {
+    // Проверяем, есть ли на странице форма оформления заказа.
+    // Если есть (это order.html) - кнопку НЕ создаем.
+    const isOrderPage = document.getElementById('submitOrderForm') !== null;
+
+    if (hasSelection && !isOrderPage) {
+        const panel = document.getElementById('dynamic-checkout-panel');
+        
         if (!panel) {
-            // Если панели нет, создаем её
+            // Если панели нет, создаём её
             const newPanel = document.createElement('div');
             newPanel.id = 'dynamic-checkout-panel';
             newPanel.style.cssText = `
@@ -313,7 +317,8 @@ function updateOrderUI() {
             }
         }
     } else {
-        // Если ничего не выбрано, удаляем панель
+        // Если мы на странице оформления ИЛИ ничего не выбрано, удаляем панель
+        const panel = document.getElementById('dynamic-checkout-panel');
         if (panel) {
             panel.remove();
         }
