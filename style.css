@@ -1,4 +1,4 @@
-﻿* {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -479,7 +479,55 @@ legend {
 }
 
 /* ========================================== */
-/* ФУТЕР (СТРОГИЙ ДИЗАЙН, ЧТОБЫ БОЛЬШЕ НЕ СЛЕТАЛ) */
+/* ПАНЕЛЬ ОФОРМЛЕНИЯ ЗАКАЗА (ЛР 8) */
+/* ========================================== */
+#checkout-panel {
+    position: sticky;
+    bottom: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 20px 30px;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 15px;
+    display: none !important;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    box-sizing: border-box;
+}
+
+#checkout-panel div {
+    display: flex;
+    align-items: center;
+}
+
+#panel-total-price {
+    font-weight: 700;
+    color: #000;
+}
+
+#checkout-link {
+    padding: 12px 30px; 
+    background: tomato; 
+    color: white; 
+    text-decoration: none; 
+    border-radius: 10px; 
+    font-weight: bold; 
+    display: inline-block;
+    pointer-events: none; 
+    opacity: 0.5;
+    transition: 0.2s;
+}
+
+#checkout-link.active-link {
+    pointer-events: auto;
+    opacity: 1;
+}
+
+/* ========================================== */
+/* ФУТЕР */
 /* ========================================== */
 footer {
     background-color: #000000 !important;
@@ -534,7 +582,6 @@ footer a:hover {
     .lunch-variants-grid { grid-template-columns: 1fr; }
     .about-content img { width: 100%; }
     
-    /* Мобильный футер */
     footer {
         flex-direction: column;
         text-align: center;
