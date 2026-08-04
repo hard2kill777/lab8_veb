@@ -46,7 +46,7 @@ function loadSelectionFromLocalStorage() {
 async function loadDishes() {
     // 1. МГНОВЕННО загружаем локальные данные
     if (typeof dishesBackup !== 'undefined' && dishesBackup.length > 0) {
-        dishes = dishesBackup;
+    dishes = dishesBackup;
         console.log("Блюда мгновенно загружены из локального файла data.js!");
         
         // Восстанавливаем выбор перед отрисовкой
