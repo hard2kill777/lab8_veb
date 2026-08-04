@@ -1,4 +1,4 @@
-/* script.js - Финальная версия с умной кнопкой оформления */
+/* script.js - Финальная версия с отдельной логикой кнопки */
 
 let dishes = [];
 
@@ -50,6 +50,7 @@ async function loadDishes() {
         loadSelectionFromLocalStorage();
         renderMenu();
         updateOrderUI();
+        updateCheckoutPanel(); // Обновляем кнопку при загрузке
     } else {
         const mainElement = document.querySelector('main');
         if (mainElement) {
@@ -68,6 +69,7 @@ async function loadDishes() {
             loadSelectionFromLocalStorage();
             renderMenu();
             updateOrderUI();
+            updateCheckoutPanel();
         }
     } catch (error) {
         console.log("Используем локальные данные.");
@@ -112,7 +114,10 @@ function renderMenu() {
 
     var buttons = document.querySelectorAll('.add-btn');
     buttons.forEach(function(btn) {
-        btn.addEventListener('click', handleAddClick);
+        btn.addEventListener('click', function(e) {
+            handleAddClick(e);
+            updateCheckoutPanel(); // ЯВНО вызываем создание кнопки при клике
+        });
     });
 
     setupFilters();
@@ -177,9 +182,13 @@ function renderDishesInContainer(container, dishesArray) {
 
     var buttons = container.querySelectorAll('.add-btn');
     buttons.forEach(function(btn) {
-        btn.addEventListener('click', handleAddClick);
+        btn.addEventListener('click', function(e) {
+            handleAddClick(e);
+            updateCheckoutPanel();
+        });
     });
     updateOrderUI();
+    updateCheckoutPanel();
 }
 
 // ========== 5. ДОБАВЛЕНИЕ В КОРЗИНУ ==========
@@ -200,7 +209,7 @@ function handleAddClick(event) {
     updateOrderUI();
 }
 
-// ========== 6. ОБНОВЛЕНИЕ UI (С УМНОЙ КНОПКОЙ) ==========
+// ========== 6. ОБНОВЛЕНИЕ UI (КОРЗИНА) ==========
 
 function updateOrderUI() {
     var categories = ['soup', 'main', 'starter', 'drink', 'dessert'];
@@ -240,90 +249,6 @@ function updateOrderUI() {
         }
     });
 
-    // ===== ДИНАМИЧЕСКОЕ СОЗДАНИЕ КНОПКИ ОФОРМЛЕНИЯ =====
-    // Проверяем, есть ли на странице форма оформления заказа.
-    // Если есть (это order.html) - кнопку НЕ создаем.
-    const isOrderPage = document.getElementById('submitOrderForm') !== null;
-
-    if (hasSelection && !isOrderPage) {
-        const panel = document.getElementById('dynamic-checkout-panel');
-        
-        if (!panel) {
-            // Если панели нет, создаём её
-            const newPanel = document.createElement('div');
-            newPanel.id = 'dynamic-checkout-panel';
-            newPanel.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #ffffff;
-                padding: 15px 30px;
-                box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
-                border-radius: 15px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                gap: 20px;
-                z-index: 1000;
-                min-width: 300px;
-                border: 1px solid #eee;
-            `;
-            
-            newPanel.innerHTML = `
-                <span style="font-weight: bold; font-size: 16px;">Стоимость: <span id="panel-total-price">0</span> руб.</span>
-                <a href="order.html" id="dynamic-checkout-link" style="
-                    padding: 10px 25px; 
-                    background: tomato; 
-                    color: white; 
-                    text-decoration: none; 
-                    border-radius: 10px; 
-                    font-weight: bold; 
-                    display: inline-block;
-                    pointer-events: none; 
-                    opacity: 0.5;
-                    transition: 0.2s;
-                ">Перейти к оформлению</a>
-            `;
-            
-            document.body.appendChild(newPanel);
-        }
-
-        // Обновляем цену
-        const totalSpan = document.getElementById('panel-total-price');
-        if (totalSpan) totalSpan.textContent = totalPrice;
-
-        // Проверка комбо
-        var isSoup = selectedDishes.soup !== null;
-        var isMain = selectedDishes.main !== null;
-        var isStarter = selectedDishes.starter !== null;
-        var isDrink = selectedDishes.drink !== null;
-
-        let isValidCombo = false;
-        if (isSoup && isMain && isStarter && isDrink) isValidCombo = true;
-        else if (isSoup && isMain && isDrink && !isStarter) isValidCombo = true;
-        else if (isSoup && isStarter && isDrink && !isMain) isValidCombo = true;
-        else if (isMain && isStarter && isDrink && !isSoup) isValidCombo = true;
-        else if (isMain && isDrink && !isSoup && !isStarter) isValidCombo = true;
-
-        const link = document.getElementById('dynamic-checkout-link');
-        if (link) {
-            if (isValidCombo) {
-                link.style.pointerEvents = 'auto';
-                link.style.opacity = '1';
-            } else {
-                link.style.pointerEvents = 'none';
-                link.style.opacity = '0.5';
-            }
-        }
-    } else {
-        // Если мы на странице оформления ИЛИ ничего не выбрано, удаляем панель
-        const panel = document.getElementById('dynamic-checkout-panel');
-        if (panel) {
-            panel.remove();
-        }
-    }
-
     // Подсветка карточек
     var allCards = document.querySelectorAll('.menu-card');
     allCards.forEach(function(card) {
@@ -335,6 +260,113 @@ function updateOrderUI() {
             }
         }
     });
+}
+
+// ========== 7. СОЗДАНИЕ ПАНЕЛИ ОФОРМЛЕНИЯ (ВЫНЕСЕНО ОТДЕЛЬНО) ==========
+
+function updateCheckoutPanel() {
+    // Проверяем, есть ли выбранные блюда
+    let hasSelection = false;
+    for (let cat in selectedDishes) {
+        if (selectedDishes[cat]) {
+            hasSelection = true;
+            break;
+        }
+    }
+
+    const panel = document.getElementById('dynamic-checkout-panel');
+
+    // Если ничего не выбрано, удаляем панель и выходим
+    if (!hasSelection) {
+        if (panel) panel.remove();
+        return;
+    }
+
+    // Если панель уже есть, просто обновляем цену и проверяем комбо
+    if (panel) {
+        updatePanelContent(panel);
+        return;
+    }
+
+    // Если панели нет, создаём её (только если мы не на странице оформления)
+    const isOrderPage = document.getElementById('submitOrderForm') !== null;
+    if (isOrderPage) return;
+
+    const newPanel = document.createElement('div');
+    newPanel.id = 'dynamic-checkout-panel';
+    newPanel.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ffffff;
+        padding: 15px 30px;
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+        border-radius: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        z-index: 1000;
+        min-width: 300px;
+        border: 1px solid #eee;
+    `;
+    
+    newPanel.innerHTML = `
+        <span style="font-weight: bold; font-size: 16px;">Стоимость: <span id="panel-total-price">0</span> руб.</span>
+        <a href="order.html" id="dynamic-checkout-link" style="
+            padding: 10px 25px; 
+            background: tomato; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            display: inline-block;
+            pointer-events: none; 
+            opacity: 0.5;
+            transition: 0.2s;
+        ">Перейти к оформлению</a>
+    `;
+    
+    document.body.appendChild(newPanel);
+    updatePanelContent(newPanel);
+}
+
+// Вспомогательная функция для обновления цены и статуса кнопки
+function updatePanelContent(panel) {
+    let totalPrice = 0;
+    for (let cat in selectedDishes) {
+        if (selectedDishes[cat]) {
+            totalPrice += selectedDishes[cat].price;
+        }
+    }
+
+    const totalSpan = document.getElementById('panel-total-price');
+    if (totalSpan) totalSpan.textContent = totalPrice;
+
+    // Проверка комбо
+    var isSoup = selectedDishes.soup !== null;
+    var isMain = selectedDishes.main !== null;
+    var isStarter = selectedDishes.starter !== null;
+    var isDrink = selectedDishes.drink !== null;
+
+    let isValidCombo = false;
+    if (isSoup && isMain && isStarter && isDrink) isValidCombo = true;
+    else if (isSoup && isMain && isDrink && !isStarter) isValidCombo = true;
+    else if (isSoup && isStarter && isDrink && !isMain) isValidCombo = true;
+    else if (isMain && isStarter && isDrink && !isSoup) isValidCombo = true;
+    else if (isMain && isDrink && !isSoup && !isStarter) isValidCombo = true;
+
+    const link = document.getElementById('dynamic-checkout-link');
+    if (link) {
+        if (isValidCombo) {
+            link.style.pointerEvents = 'auto';
+            link.style.opacity = '1';
+        } else {
+            link.style.pointerEvents = 'none';
+            link.style.opacity = '0.5';
+        }
+    }
 }
 
 // ========== ЗАПУСК ==========
