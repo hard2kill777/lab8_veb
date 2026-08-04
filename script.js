@@ -1,4 +1,4 @@
-/* script.js - ЛР 8 (Работа с localStorage и панелью оформления) */
+/* script.js - Финальная версия с динамической кнопкой оформления */
 
 let dishes = [];
 
@@ -200,6 +200,8 @@ function handleAddClick(event) {
     updateOrderUI();
 }
 
+// ========== 6. ОБНОВЛЕНИЕ UI И СОЗДАНИЕ КНОПКИ ==========
+
 function updateOrderUI() {
     var categories = ['soup', 'main', 'starter', 'drink', 'dessert'];
     var categoryTitles = {
@@ -238,14 +240,54 @@ function updateOrderUI() {
         }
     });
 
-    // ===== ОБНОВЛЕНИЕ ПАНЕЛИ ОФОРМЛЕНИЯ =====
-    const checkoutPanel = document.getElementById('checkout-panel');
-    const totalSpan = document.getElementById('panel-total-price');
-    const checkoutLink = document.getElementById('checkout-link');
+    // ===== ДИНАМИЧЕСКОЕ СОЗДАНИЕ КНОПКИ ОФОРМЛЕНИЯ =====
+    const panel = document.getElementById('dynamic-checkout-panel');
     
     if (hasSelection) {
+        if (!panel) {
+            // Если панели нет, создаем её
+            const newPanel = document.createElement('div');
+            newPanel.id = 'dynamic-checkout-panel';
+            newPanel.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #ffffff;
+                padding: 15px 30px;
+                box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+                border-radius: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 20px;
+                z-index: 1000;
+                min-width: 300px;
+                border: 1px solid #eee;
+            `;
+            
+            newPanel.innerHTML = `
+                <span style="font-weight: bold; font-size: 16px;">Стоимость: <span id="panel-total-price">0</span> руб.</span>
+                <a href="order.html" id="dynamic-checkout-link" style="
+                    padding: 10px 25px; 
+                    background: tomato; 
+                    color: white; 
+                    text-decoration: none; 
+                    border-radius: 10px; 
+                    font-weight: bold; 
+                    display: inline-block;
+                    pointer-events: none; 
+                    opacity: 0.5;
+                    transition: 0.2s;
+                ">Перейти к оформлению</a>
+            `;
+            
+            document.body.appendChild(newPanel);
+        }
+
+        // Обновляем цену
+        const totalSpan = document.getElementById('panel-total-price');
         if (totalSpan) totalSpan.textContent = totalPrice;
-        if (checkoutPanel) checkoutPanel.style.display = 'flex'; // Показываем панель
 
         // Проверка комбо
         var isSoup = selectedDishes.soup !== null;
@@ -260,15 +302,21 @@ function updateOrderUI() {
         else if (isMain && isStarter && isDrink && !isSoup) isValidCombo = true;
         else if (isMain && isDrink && !isSoup && !isStarter) isValidCombo = true;
 
-        if (isValidCombo) {
-            checkoutLink.style.pointerEvents = 'auto';
-            checkoutLink.style.opacity = '1';
-        } else {
-            checkoutLink.style.pointerEvents = 'none';
-            checkoutLink.style.opacity = '0.5';
+        const link = document.getElementById('dynamic-checkout-link');
+        if (link) {
+            if (isValidCombo) {
+                link.style.pointerEvents = 'auto';
+                link.style.opacity = '1';
+            } else {
+                link.style.pointerEvents = 'none';
+                link.style.opacity = '0.5';
+            }
         }
     } else {
-        if (checkoutPanel) checkoutPanel.style.display = 'none';
+        // Если ничего не выбрано, удаляем панель
+        if (panel) {
+            panel.remove();
+        }
     }
 
     // Подсветка карточек
