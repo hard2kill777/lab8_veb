@@ -3,7 +3,7 @@
 // Загружаем локальный файл как "базу данных" (вместо API)
 async function loadDishesFromAPI() {
     if (typeof dishesBackup !== 'undefined') {
-        return dishesBackup; // Берем из data.js
+        return dishesBackup; 
     }
     return [];
 }
