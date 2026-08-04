@@ -41,17 +41,13 @@ function loadSelectionFromLocalStorage() {
     }
 }
 
-// ========== 2. ЗАГРУЗКА ДАННЫХ (МГНОВЕННО + ФОНОВОЙ API) ==========
+// ========== 2. ЗАГРУЗКА ДАННЫХ ==========
 
 async function loadDishes() {
-    // 1. МГНОВЕННО загружаем локальные данные
     if (typeof dishesBackup !== 'undefined' && dishesBackup.length > 0) {
         dishes = dishesBackup;
-        console.log("Блюда мгновенно загружены из локального файла data.js!");
-        
-        // Восстанавливаем выбор перед отрисовкой
+        console.log("Блюда загружены локально!");
         loadSelectionFromLocalStorage();
-        
         renderMenu();
         updateOrderUI();
     } else {
@@ -62,22 +58,19 @@ async function loadDishes() {
         return;
     }
 
-    // 2. В ФОНЕ пытаемся загрузить свежие данные с сервера Политеха
     const apiUrl = 'https://edu.std-900.ist.mospolytech.ru/labs/api/dishes';
     try {
         const response = await fetch(apiUrl);
         if (response.ok) {
             const data = await response.json();
             dishes = data;
-            console.log("Данные обновлены с сервера Политеха!");
-            
-            // Перерисовываем с новыми данными
+            console.log("Данные обновлены с сервера!");
             loadSelectionFromLocalStorage();
             renderMenu();
             updateOrderUI();
         }
     } catch (error) {
-        console.log("Сервер Политеха не ответил, используем локальные данные.");
+        console.log("Используем локальные данные.");
     }
 }
 
@@ -245,16 +238,16 @@ function updateOrderUI() {
         }
     });
 
-    // ===== ОБНОВЛЕНИЕ ПАНЕЛИ ОФОРМЛЕНИЯ (КНОПКА ПЕРЕЙТИ) =====
+    // ===== ОБНОВЛЕНИЕ ПАНЕЛИ ОФОРМЛЕНИЯ =====
     const checkoutPanel = document.getElementById('checkout-panel');
     const totalSpan = document.getElementById('panel-total-price');
     const checkoutLink = document.getElementById('checkout-link');
     
     if (hasSelection) {
         if (totalSpan) totalSpan.textContent = totalPrice;
-        if (checkoutPanel) checkoutPanel.style.display = 'flex';
+        if (checkoutPanel) checkoutPanel.style.display = 'flex'; // Показываем панель
 
-        // Проверка комбо для кнопки
+        // Проверка комбо
         var isSoup = selectedDishes.soup !== null;
         var isMain = selectedDishes.main !== null;
         var isStarter = selectedDishes.starter !== null;
@@ -278,7 +271,7 @@ function updateOrderUI() {
         if (checkoutPanel) checkoutPanel.style.display = 'none';
     }
 
-    // Подсветка выбранных карточек
+    // Подсветка карточек
     var allCards = document.querySelectorAll('.menu-card');
     allCards.forEach(function(card) {
         card.classList.remove('selected');
